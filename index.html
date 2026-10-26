@@ -143,12 +143,12 @@
     <section>
       <h2 class="rowlabel">Tus apps</h2>
       <div class="row apps" id="apps">
-        <button class="tile b-netflix" data-app="Netflix"><span class="brand"><span class="wm">NETFLIX</span></span></button>
-        <button class="tile b-prime" data-app="Prime Video"><span class="brand"><span class="wm"><b>prime</b> video</span></span><span class="label">Prime Video</span></button>
-        <button class="tile b-disney" data-app="Disney+"><span class="brand"><span class="wm">Disney<span class="plus">+</span></span></span></button>
-        <button class="tile b-crunchy" data-app="Crunchyroll"><span class="brand"><span class="wm">crunchyroll</span></span><span class="label" style="color:#1a1a1a;text-shadow:none">Crunchyroll</span></button>
-        <button class="tile b-vix" data-app="ViX"><span class="brand"><span class="wm">ViX</span></span></button>
-        <button class="tile b-hbo" data-app="HBO Max"><span class="brand"><span class="wm">HBO<span>Max</span></span></span></button>
+        <button class="tile b-netflix" data-app="Netflix" data-url="https://www.netflix.com"><span class="brand"><span class="wm">NETFLIX</span></span></button>
+        <button class="tile b-prime" data-app="Prime Video" data-url="https://www.primevideo.com"><span class="brand"><span class="wm"><b>prime</b> video</span></span><span class="label">Prime Video</span></button>
+        <button class="tile b-disney" data-app="Disney+" data-url="https://cd-dmgz.bamgrid.com/bbd/hisense_tv/index.html"><span class="brand"><span class="wm">Disney<span class="plus">+</span></span></span></button>
+        <button class="tile b-crunchy" data-app="Crunchyroll" data-url="https://www.crunchyroll.com/tetsuo/hisense-vidaa/"><span class="brand"><span class="wm">crunchyroll</span></span><span class="label" style="color:#1a1a1a;text-shadow:none">Crunchyroll</span></button>
+        <button class="tile b-vix" data-app="ViX" data-url="https://webvidaa.vix.com/"><span class="brand"><span class="wm">ViX</span></span></button>
+        <button class="tile b-hbo" data-app="HBO Max" data-url="https://vidaa.play.max.com/"><span class="brand"><span class="wm">HBO<span>Max</span></span></span></button>
       </div>
     </section>
 
@@ -167,7 +167,7 @@
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="9" width="10" height="12" rx="2"/><path d="M9 9V5.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V9"/><path d="M10.5 13.5h.01M13.5 13.5h.01"/></svg>
           <span class="qlabel">USB</span>
         </button>
-        <button class="tile" data-app="YouTube">
+        <button class="tile" data-app="YouTube" data-url="https://www.youtube.com/tv">
           <svg class="ic yt" viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.5a3 3 0 0 0-2.1-2.1C19 4.9 12 4.9 12 4.9s-7 0-8.9.5A3 3 0 0 0 1 7.5 31 31 0 0 0 .6 12 31 31 0 0 0 1 16.5a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5A3 3 0 0 0 23 16.5 31 31 0 0 0 23.4 12 31 31 0 0 0 23 7.5z"/><path d="M9.8 15.3V8.7l5.7 3.3z" fill="#06070b"/></svg>
           <span class="qlabel">YouTube</span>
         </button>
@@ -216,13 +216,22 @@
 
   // toast on "launch"
   var toast=document.getElementById("toast"), tid;
-  function launch(name){
-    toast.hidden=false; toast.textContent="Abriendo "+name+" …";
+  function showToast(txt, ms){
+    toast.hidden=false; toast.textContent=txt;
     requestAnimationFrame(function(){ toast.classList.add("show"); });
     clearTimeout(tid);
     tid=setTimeout(function(){ toast.classList.remove("show");
-      setTimeout(function(){ toast.hidden=true; }, 220); }, 1400);
-    // En la TV real, aquí se llamaría al puente JS de VIDAA para lanzar la app.
+      setTimeout(function(){ toast.hidden=true; }, 220); }, ms||1600);
+  }
+  function openTile(el){
+    var name=el.dataset.app, url=el.dataset.url;
+    if(url){
+      showToast("Abriendo "+name+" …");
+      setTimeout(function(){ window.location.href=url; }, 450);
+    } else {
+      // Entradas (HDMI/USB) y ajustes son del sistema: no se pueden desde la web.
+      showToast(name+" · requiere el servicio de control", 2200);
+    }
   }
 
   // spatial D-pad navigation across all tiles
@@ -255,13 +264,13 @@
       case "ArrowDown": move("down"); e.preventDefault(); break;
       case "Enter": case " ":
         var cur=document.querySelector(".tile.is-focus");
-        if(cur){ launch(cur.dataset.app); e.preventDefault(); }
+        if(cur){ openTile(cur); e.preventDefault(); }
         break;
     }
   });
   tiles.forEach(function(t){
     t.addEventListener("mouseenter",function(){ setFocus(t); });
-    t.addEventListener("click",function(){ setFocus(t); launch(t.dataset.app); });
+    t.addEventListener("click",function(){ setFocus(t); openTile(t); });
   });
   setFocus(tiles[0]);
 })();
