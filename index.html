@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
 <style>
-  /* Layout: full-bleed dark "stage" â€” top bar (greeting + live clock), two D-pad
+  /* Layout: full-bleed dark "stage" — top bar (greeting + live clock), two D-pad
      navigable rows (apps, accesos). Single dark theme by design (a TV launcher). */
   :root{
     --bg:#06070b;
@@ -188,9 +188,9 @@
   </main>
 
   <footer class="hint">
-    <span><kbd>â—‚ â–¸ â–´ â–¾</kbd> moverte</span>
+    <span><kbd>◂ ▸ ▴ ▾</kbd> moverte</span>
     <span><kbd>OK</kbd> abrir</span>
-    <span class="tag">Prototipo Â· launcher</span>
+    <span class="tag">Prototipo · launcher</span>
   </footer>
 </div>
 
@@ -202,13 +202,13 @@
 
   // live clock + greeting + date
   var MESES=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
-  var DIAS=["domingo","lunes","martes","miÃ©rcoles","jueves","viernes","sÃ¡bado"];
+  var DIAS=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
   function pad(n){return (n<10?"0":"")+n;}
   function tick(){
     var d=new Date();
     var h=d.getHours();
     document.getElementById("clock").textContent=pad(h)+":"+pad(d.getMinutes());
-    var g = h<6?"Buenas noches" : h<12?"Buenos dÃ­as" : h<19?"Buenas tardes" : "Buenas noches";
+    var g = h<6?"Buenas noches" : h<12?"Buenos días" : h<19?"Buenas tardes" : "Buenas noches";
     document.getElementById("greet").innerHTML = g+', <span class="name">Fredi</span>';
     document.getElementById("dateline").textContent = DIAS[d.getDay()]+" "+d.getDate()+" de "+MESES[d.getMonth()];
   }
@@ -217,12 +217,12 @@
   // toast on "launch"
   var toast=document.getElementById("toast"), tid;
   function launch(name){
-    toast.hidden=false; toast.textContent="Abriendo "+name+" â€¦";
+    toast.hidden=false; toast.textContent="Abriendo "+name+" …";
     requestAnimationFrame(function(){ toast.classList.add("show"); });
     clearTimeout(tid);
     tid=setTimeout(function(){ toast.classList.remove("show");
       setTimeout(function(){ toast.hidden=true; }, 220); }, 1400);
-    // En la TV real, aquÃ­ se llamarÃ­a al puente JS de VIDAA para lanzar la app.
+    // En la TV real, aquí se llamaría al puente JS de VIDAA para lanzar la app.
   }
 
   // spatial D-pad navigation across all tiles
