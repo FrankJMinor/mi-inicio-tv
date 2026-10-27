@@ -12,29 +12,91 @@
   /* Layout: full-bleed dark "stage" — top bar (greeting + live clock), two D-pad
      navigable rows (apps, accesos). Single dark theme by design (a TV launcher). */
   :root{
-    --bg:#06070b;
-    --bg-2:#0d0f16;
-    --tile:#12141d;
-    --fg:#f3f4f8;
-    --muted:#888ea2;
-    --line:rgba(255,255,255,.08);
-    --focus:#ffc24b;
-    --focus-glow:rgba(255,194,75,.45);
+    --bg:#070c24;
+    --bg-top:#0b1642;
+    --bg-2:#0c1432;
+    --tile:#111a3a;
+    --fg:#f3f6ff;
+    --muted:#9aa8cf;
+    --line:rgba(110,160,255,.18);
+    --neon:rgba(90,180,255,.6);
+    --neon-glow:rgba(60,150,255,.45);
+    --wave-cyan:#5fe0ff;
+    --wave-blue:#4d8dff;
+    --wave-violet:#a070ff;
+    --wave-pink:#ff6ac1;
+    --wave-green:#34e6b0;
+    --aurora-blue:rgba(40,120,255,.55);
+    --aurora-violet:rgba(150,70,255,.5);
+    --aurora-green:rgba(30,220,150,.34);
+    --focus:#62c8ff;
+    --focus-glow:rgba(70,170,255,.6);
+    --soft:#9fd0ff;
+    --date:#8ec9ff;
+    --card-line:rgba(150,170,255,.3);
     --display:'Sora',system-ui,-apple-system,sans-serif;
     --ui:'Hanken Grotesk',system-ui,-apple-system,sans-serif;
     color-scheme:dark;
   }
   html,body{height:100%}
   body{
-    margin:0;background:
-      radial-gradient(130% 90% at 80% -10%, #15131f 0%, transparent 55%),
-      radial-gradient(120% 80% at 0% 110%, #0a1420 0%, transparent 50%),
-      var(--bg);
+    margin:0;background:var(--bg);
     color:var(--fg);font-family:var(--ui);
     -webkit-font-smoothing:antialiased;
   }
+
+  /* ---- fondo animado: solo transform y opacity, para que corra fluido en la TV ---- */
+  .bg{position:fixed;top:0;right:0;bottom:0;left:0;z-index:0;overflow:hidden;pointer-events:none;
+    background:linear-gradient(160deg,var(--bg-top) 0%,var(--bg) 60%)}
+  .glow{position:absolute;border-radius:50%;will-change:transform}
+  .glow.blue{width:70vmax;height:70vmax;left:-22vmax;top:-30vmax;
+    background:radial-gradient(circle,var(--aurora-blue) 0%,transparent 66%);
+    animation:drift-a 38s ease-in-out infinite alternate}
+  .glow.violet{width:62vmax;height:62vmax;right:-20vmax;bottom:-28vmax;
+    background:radial-gradient(circle,var(--aurora-violet) 0%,transparent 66%);
+    animation:drift-b 46s ease-in-out infinite alternate}
+  .glow.green{width:48vmax;height:48vmax;left:-14vmax;bottom:-24vmax;
+    background:radial-gradient(circle,var(--aurora-green) 0%,transparent 68%);
+    animation:drift-c 52s ease-in-out infinite alternate}
+  /* arcos de color que rodean dos esquinas: un anillo con degradado cónico, recortado
+     por una máscara, que gira muy despacio */
+  .ring{position:absolute;width:96vmin;height:96vmin;border-radius:50%;will-change:transform;opacity:.9;
+    -webkit-mask-image:radial-gradient(circle closest-side,transparent 60%,#000 74%,#000 80%,transparent 93%);
+    mask-image:radial-gradient(circle closest-side,transparent 60%,#000 74%,#000 80%,transparent 93%)}
+  .ring.tr{right:-48vmin;top:-48vmin;
+    background:conic-gradient(from 0deg,transparent 0deg,var(--wave-cyan) 50deg,var(--wave-blue) 120deg,var(--wave-violet) 190deg,var(--wave-pink) 250deg,transparent 320deg);
+    animation:spin 95s linear infinite}
+  .ring.bl{left:-48vmin;bottom:-48vmin;
+    background:conic-gradient(from 90deg,transparent 0deg,var(--wave-green) 50deg,var(--wave-cyan) 120deg,var(--wave-violet) 200deg,var(--wave-pink) 260deg,transparent 330deg);
+    animation:spin 120s linear infinite reverse}
+  /* cintas de ondas: .sway las sube y baja suave; .flow las desliza de lado. Las curvas se
+     repiten cada pantalla, así el deslizamiento es continuo y no se nota el corte */
+  .sway{position:absolute;left:0;width:100%;will-change:transform}
+  .sway.s1{top:36vh;height:60vh;animation:sway-a 26s ease-in-out infinite alternate}
+  .sway.s2{top:14vh;height:50vh;animation:sway-b 34s ease-in-out infinite alternate}
+  .flow{position:absolute;left:0;top:0;width:200%;height:100%;will-change:transform}
+  .flow.f1{animation:flow 90s linear infinite}
+  .flow.f2{animation:flow 130s linear infinite reverse}
+  .flow svg{display:block;width:100%;height:100%}
+  .vignette{position:absolute;top:0;right:0;bottom:0;left:0;
+    background:radial-gradient(120% 90% at 50% 50%,transparent 45%,rgba(4,7,20,.75) 100%)}
+  .frame{position:fixed;top:10px;right:10px;bottom:10px;left:10px;z-index:2;pointer-events:none;
+    border-radius:16px;border:1px solid var(--neon);will-change:opacity;
+    box-shadow:0 0 14px var(--neon-glow),inset 0 0 18px var(--neon-glow);
+    animation:frame-pulse 7s ease-in-out infinite}
+  @keyframes flow{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+  @keyframes sway-a{from{transform:translate3d(0,-2vh,0)}to{transform:translate3d(0,3vh,0)}}
+  @keyframes sway-b{from{transform:translate3d(0,2vh,0)}to{transform:translate3d(0,-3vh,0)}}
+  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  @keyframes drift-a{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(14vmax,10vmax,0) scale(1.18)}}
+  @keyframes drift-b{from{transform:translate3d(0,0,0) scale(1.05)}to{transform:translate3d(-16vmax,-8vmax,0) scale(.9)}}
+  @keyframes drift-c{from{transform:translate3d(0,0,0) scale(.95)}to{transform:translate3d(18vmax,-12vmax,0) scale(1.15)}}
+  @keyframes frame-pulse{0%,100%{opacity:.55}50%{opacity:1}}
+  .nofx .glow,.nofx .ring,.nofx .sway,.nofx .flow,.nofx .frame{animation:none!important}
+  @media (prefers-reduced-motion:reduce){.glow,.ring,.sway,.flow,.frame{animation:none!important}}
+
   .stage{
-    min-height:100%;display:flex;flex-direction:column;gap:clamp(18px,3.2vh,40px);
+    position:relative;z-index:1;min-height:100%;display:flex;flex-direction:column;gap:clamp(18px,3.2vh,40px);
     padding:clamp(22px,4.2vh,52px) max(clamp(26px,4vw,64px),env(safe-area-inset-left,0px)) clamp(18px,3vh,36px) max(clamp(26px,4vw,64px),env(safe-area-inset-right,0px));
     box-sizing:border-box;
   }
@@ -43,71 +105,80 @@
   .topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap}
   .greet h1{
     font-family:var(--display);font-weight:800;margin:0;
-    font-size:clamp(1.9rem,4.4vw,3.3rem);letter-spacing:-.02em;text-wrap:balance;line-height:1.02;
+    font-size:clamp(2rem,5.2vw,4.6rem);letter-spacing:-.02em;text-wrap:balance;line-height:1.02;
   }
   .greet .name{color:var(--focus)}
-  .greet p{margin:.5rem 0 0;color:var(--muted);font-size:clamp(.9rem,1.5vw,1.15rem);text-transform:capitalize}
+  .greet p{margin:.6rem 0 0;color:var(--date);font-size:clamp(1rem,1.9vw,1.75rem)}
   .clock{text-align:right;line-height:1}
   .clock .time{
     font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;
-    font-size:clamp(2.1rem,5vw,3.6rem);letter-spacing:-.01em;
+    font-size:clamp(2.2rem,5.6vw,5rem);letter-spacing:-.01em;
+    color:#e6f3ff;text-shadow:0 0 24px rgba(110,190,255,.55);
   }
   .clock .ampm{color:var(--muted);font-weight:600;font-size:.42em;margin-left:.35em}
 
   /* ---- rows ---- */
-  main{display:flex;flex-direction:column;gap:clamp(16px,2.8vh,34px);flex:1}
+  main{display:flex;flex-direction:column;justify-content:space-evenly;gap:clamp(18px,3.6vh,44px);flex:1}
   .rowlabel{
-    font-size:.82rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--muted);margin:0 0 clamp(10px,1.4vh,16px);
+    font-family:var(--display);font-size:clamp(.95rem,1.55vw,1.4rem);font-weight:700;
+    letter-spacing:.07em;text-transform:uppercase;color:var(--fg);margin:0 0 clamp(10px,1.7vh,20px);
   }
-  .row{display:flex;gap:clamp(12px,1.4vw,22px);flex-wrap:wrap}
+  .row{display:grid;gap:clamp(10px,1.3vw,24px)}
+  .row.apps{grid-template-columns:repeat(7,minmax(0,1fr))}
+  .row.quick{grid-template-columns:repeat(5,minmax(0,1fr))}
 
   .tile{
-    position:relative;border:0;cursor:pointer;color:#fff;font-family:var(--ui);
-    border-radius:18px;overflow:hidden;padding:0;
-    outline:none;transition:transform .16s ease, box-shadow .16s ease;
+    position:relative;cursor:pointer;color:#fff;font-family:var(--ui);
+    border:1px solid var(--card-line);border-radius:20px;overflow:hidden;padding:0;
+    outline:none;transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
     background:var(--tile);isolation:isolate;
   }
   .tile:focus-visible,.tile.is-focus{
-    transform:translateY(-4px) scale(1.035);
-    box-shadow:0 0 0 3px var(--focus), 0 14px 38px -10px var(--focus-glow);
+    transform:translateY(-6px) scale(1.06);border-color:var(--focus);
+    box-shadow:0 0 0 2px var(--focus), 0 0 0 7px rgba(98,200,255,.22), 0 18px 46px -8px var(--focus-glow);
     z-index:2;
   }
   @media (prefers-reduced-motion:reduce){.tile{transition:none}.tile.is-focus{transform:none}}
 
-  /* app tiles */
-  .apps .tile{width:clamp(150px,15.5vw,224px);aspect-ratio:16/10}
-  .brand{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  /* tarjetas de apps: verticales */
+  .apps .tile{aspect-ratio:.72;width:100%}
+  .brand{position:absolute;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;
     font-weight:800;letter-spacing:-.01em}
-  .tile .label{position:absolute;left:14px;bottom:11px;font-size:.84rem;font-weight:600;
-    color:rgba(255,255,255,.92);text-shadow:0 1px 6px rgba(0,0,0,.5);z-index:3}
+  .wm{display:flex;flex-direction:column;align-items:center;gap:.4em;text-align:center;line-height:1}
 
-  /* brand looks */
-  .b-netflix{background:#0b0b0f}
-  .b-netflix .wm{font-family:var(--display);font-weight:800;color:#E50914;font-size:clamp(1.3rem,2.7vw,2rem);letter-spacing:.02em}
-  .b-prime{background:linear-gradient(135deg,#0f1c30,#15304f)}
-  .b-prime .wm{font-size:clamp(1.05rem,2.1vw,1.5rem);font-weight:700}
-  .b-prime .wm b{color:#38b6ff}
-  .b-disney{background:linear-gradient(150deg,#071249,#0a1f78 70%)}
-  .b-disney .wm{font-family:var(--display);font-weight:700;font-size:clamp(1.15rem,2.4vw,1.8rem)}
-  .b-disney .plus{color:#2ec8ff}
-  .b-crunchy{background:#f47521}
-  .b-crunchy .wm{color:#1a1a1a;font-weight:800;font-size:clamp(1rem,2vw,1.42rem);letter-spacing:-.02em}
-  .b-vix{background:linear-gradient(120deg,#ff2d6f,#ff7a3d)}
-  .b-vix .wm{font-family:var(--display);font-style:italic;font-weight:800;font-size:clamp(1.5rem,3vw,2.3rem)}
-  .b-hbo{background:linear-gradient(135deg,#1a0b3a,#211253 55%,#0a1f66)}
-  .b-hbo .wm{font-family:var(--display);font-weight:800;font-size:clamp(1.2rem,2.5vw,1.9rem);letter-spacing:-.01em}
-  .b-hbo .wm span{font-weight:500;opacity:.88;margin-left:.12em}
+  .b-netflix{background:linear-gradient(180deg,#1d1d22,#0d0d10)}
+  .b-netflix .wm{font-family:var(--display);color:#e50914;font-size:clamp(1rem,2.15vw,2.1rem);letter-spacing:.02em}
+  .b-prime{background:linear-gradient(165deg,#2b7be8,#0f3f9a)}
+  .b-prime .p1{color:#8fd4ff;font-size:clamp(1.1rem,2.4vw,2.4rem);font-weight:800}
+  .b-prime .p2{color:#fff;font-size:clamp(1.1rem,2.4vw,2.4rem);font-weight:800}
+  .b-prime .smile{width:60%;height:auto}
+  .b-disney{background:linear-gradient(170deg,#0d1f6e,#07123f)}
+  .b-disney .wm{font-family:var(--display);font-weight:700;font-size:clamp(1.1rem,2.3vw,2.2rem)}
+  .b-disney .plus{color:#5fd0ff}
+  .b-disney .arc{width:62%;height:auto}
+  .b-crunchy{background:linear-gradient(180deg,#1b2625,#0d1514)}
+  .b-crunchy .cr{width:46%;height:auto}
+  .b-crunchy .wm{font-size:clamp(.85rem,1.6vw,1.5rem);font-weight:700;letter-spacing:-.01em}
+  .b-vix{background:linear-gradient(165deg,#7d0f0f,#b4350a 62%,#520808)}
+  .b-vix .wm{font-family:var(--display);font-style:italic;font-weight:800;color:#ff8a3d;font-size:clamp(1.8rem,3.9vw,3.6rem)}
+  .b-hbo{background:linear-gradient(165deg,#2a1257,#101a5a)}
+  .b-hbo .wm{font-family:var(--display);font-weight:800;font-size:clamp(1.3rem,2.8vw,2.7rem)}
+  .b-hbo .wm span{font-weight:500;opacity:.9;font-size:.78em}
+  .b-youtube{background:linear-gradient(180deg,#1d1d22,#0d0d10)}
+  .b-youtube .yt{width:48%;height:auto}
+  .b-youtube .wm{font-size:clamp(.9rem,1.7vw,1.6rem);font-weight:700;letter-spacing:-.01em}
 
-  /* quick tiles */
-  .quick .tile{width:clamp(118px,11vw,164px);aspect-ratio:16/11;background:var(--bg-2);
-    border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;
-    justify-content:center;gap:10px}
-  .quick .tile .ic{width:clamp(26px,2.4vw,34px);height:clamp(26px,2.4vw,34px);color:var(--fg)}
-  .quick .tile .qlabel{font-size:.86rem;font-weight:600;color:var(--fg)}
-  .quick .tile .ic.yt{color:#ff3d3d}
-  .quick .tile.dim{opacity:.5}
-  .quick .tile.dim .qlabel,.quick .tile.dim .ic{color:var(--muted)}
+  /* accesos: botones anchos con el ícono en una caja */
+  .quick .tile{
+    display:flex;align-items:center;gap:clamp(10px,1.1vw,18px);text-align:left;
+    height:clamp(62px,9.2vh,98px);padding:0 clamp(10px,1.2vw,20px);
+    background:linear-gradient(180deg,#131d44,#0c1432);
+  }
+  .ibox{flex:none;width:clamp(38px,3.3vw,60px);height:clamp(38px,3.3vw,60px);border-radius:12px;
+    background:#070c22;border:1px solid rgba(120,170,255,.24);
+    display:flex;align-items:center;justify-content:center}
+  .ibox .ic{width:58%;height:58%;color:var(--soft)}
+  .qlabel{font-size:clamp(.95rem,1.55vw,1.45rem);font-weight:600;color:var(--fg);white-space:nowrap}
 
   .hint{color:var(--muted);font-size:.82rem;display:flex;gap:18px;flex-wrap:wrap;align-items:center}
   .hint kbd{font-family:var(--ui);background:var(--bg-2);border:1px solid var(--line);
@@ -116,19 +187,48 @@
     color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
 
   .toast{position:fixed;left:50%;bottom:clamp(26px,6vh,64px);transform:translateX(-50%) translateY(12px);
-    background:var(--focus);color:#20160b;font-weight:700;padding:13px 24px;border-radius:999px;
+    background:var(--focus);color:#04122b;font-weight:700;padding:13px 24px;border-radius:999px;
     box-shadow:0 14px 40px -12px var(--focus-glow);opacity:0;transition:opacity .2s,transform .2s;z-index:9}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+  @media (max-width:900px){
+    .row.apps{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .row.quick{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
   @media (max-width:560px){
-    .apps .tile{width:calc(50% - 8px)}
-    .quick .tile{width:calc(33.333% - 8px)}
+    .row.apps{grid-template-columns:repeat(3,minmax(0,1fr))}
     .clock{text-align:left}
   }
 </style>
 </head>
 <body style="margin:0">
 
+
+<div class="bg" aria-hidden="true">
+  <div class="glow blue"></div>
+  <div class="glow violet"></div>
+  <div class="glow green"></div>
+  <div class="ring tr"></div>
+  <div class="ring bl"></div>
+  <div class="sway s1"><div class="flow f1">
+    <svg viewBox="0 0 3840 650" preserveAspectRatio="none">
+      <defs><linearGradient id="gwA" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="3840" y2="0">
+        <stop offset="0" style="stop-color:var(--wave-cyan)"/><stop offset=".1667" style="stop-color:var(--wave-blue)"/><stop offset=".3333" style="stop-color:var(--wave-violet)"/><stop offset=".5" style="stop-color:var(--wave-cyan)"/><stop offset=".6667" style="stop-color:var(--wave-blue)"/><stop offset=".8333" style="stop-color:var(--wave-violet)"/><stop offset="1" style="stop-color:var(--wave-cyan)"/>
+      </linearGradient></defs>
+      <g id="wavesA" fill="none" stroke="url(#gwA)" stroke-width="1.4" stroke-opacity=".5" stroke-linecap="round"></g>
+    </svg>
+  </div></div>
+  <div class="sway s2"><div class="flow f2">
+    <svg viewBox="0 0 3840 540" preserveAspectRatio="none">
+      <defs><linearGradient id="gwB" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="3840" y2="0">
+        <stop offset="0" style="stop-color:var(--wave-blue)"/><stop offset=".1667" style="stop-color:var(--wave-violet)"/><stop offset=".3333" style="stop-color:var(--wave-pink)"/><stop offset=".5" style="stop-color:var(--wave-blue)"/><stop offset=".6667" style="stop-color:var(--wave-violet)"/><stop offset=".8333" style="stop-color:var(--wave-pink)"/><stop offset="1" style="stop-color:var(--wave-blue)"/>
+      </linearGradient></defs>
+      <g id="wavesB" fill="none" stroke="url(#gwB)" stroke-width="3.2" stroke-opacity=".55" stroke-linecap="round" stroke-dasharray="0.1 11"></g>
+    </svg>
+  </div></div>
+  <div class="vignette"></div>
+</div>
+<div class="frame" aria-hidden="true"></div>
 
 <div class="stage">
   <header class="topbar">
@@ -143,45 +243,30 @@
     <section>
       <h2 class="rowlabel">Tus apps</h2>
       <div class="row apps" id="apps">
-        <button class="tile b-netflix" data-app="Netflix" data-url="https://www.netflix.com"><span class="brand"><span class="wm">NETFLIX</span></span></button>
-        <button class="tile b-prime" data-app="Prime Video" data-url="https://www.primevideo.com"><span class="brand"><span class="wm"><b>prime</b> video</span></span><span class="label">Prime Video</span></button>
-        <button class="tile b-disney" data-app="Disney+" data-url="https://cd-dmgz.bamgrid.com/bbd/hisense_tv/index.html"><span class="brand"><span class="wm">Disney<span class="plus">+</span></span></span></button>
-        <button class="tile b-crunchy" data-app="Crunchyroll" data-url="https://www.crunchyroll.com/tetsuo/hisense-vidaa/"><span class="brand"><span class="wm">crunchyroll</span></span><span class="label" style="color:#1a1a1a;text-shadow:none">Crunchyroll</span></button>
-        <button class="tile b-vix" data-app="ViX" data-url="https://webvidaa.vix.com/"><span class="brand"><span class="wm">ViX</span></span></button>
-        <button class="tile b-hbo" data-app="HBO Max" data-url="https://vidaa.play.max.com/"><span class="brand"><span class="wm">HBO<span>Max</span></span></span></button>
+        <button class="tile b-netflix" data-app="Netflix" data-key="netflix" data-url="https://www.netflix.com"><span class="brand"><span class="wm">NETFLIX</span></span></button>
+        <button class="tile b-prime" data-app="Prime Video" data-key="prime" data-url="https://www.primevideo.com"><span class="brand"><span class="wm"><span class="p1">prime</span><span class="p2">video</span><svg class="smile" viewBox="0 0 70 20" fill="none" stroke="#8fd4ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5c18 12 40 10 56-2"/><path d="M54 1.5l8.5 1.2-3 8"/></svg></span></span></button>
+        <button class="tile b-disney" data-app="Disney+" data-key="disney" data-url="https://cd-dmgz.bamgrid.com/bbd/hisense_tv/index.html"><span class="brand"><span class="wm"><svg class="arc" viewBox="0 0 120 30" fill="none" stroke="#7fd0ff" stroke-width="2.2" stroke-linecap="round"><path d="M6 26C30 4 88 0 114 18"/></svg><span>Disney<span class="plus">+</span></span></span></span></button>
+        <button class="tile b-crunchy" data-app="Crunchyroll" data-key="crunchyroll" data-url="https://www.crunchyroll.com/tetsuo/hisense-vidaa/"><span class="brand"><span class="wm"><svg class="cr" viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="#f47521"/><circle cx="37" cy="30" r="17" fill="#141c1b"/><circle cx="41" cy="30" r="10.5" fill="#f47521"/></svg><span>crunchyroll</span></span></span></button>
+        <button class="tile b-vix" data-app="ViX" data-key="vix" data-url="https://webvidaa.vix.com/"><span class="brand"><span class="wm">ViX</span></span></button>
+        <button class="tile b-hbo" data-app="HBO Max" data-key="hbo" data-url="https://vidaa.play.max.com/"><span class="brand"><span class="wm">HBO<span>Max</span></span></span></button>
+        <button class="tile b-youtube" data-app="YouTube" data-key="youtube" data-url="https://www.youtube.com/tv"><span class="brand"><span class="wm"><svg class="yt" viewBox="0 0 24 24"><rect x="1" y="4.5" width="22" height="15" rx="4.5" fill="#ff1f1f"/><path d="M9.7 8.8v6.4l5.6-3.2z" fill="#fff"/></svg><span>YouTube</span></span></span></button>
       </div>
     </section>
 
     <section>
       <h2 class="rowlabel">Accesos</h2>
       <div class="row quick" id="quick">
-        <button class="tile" data-app="HDMI 1">
-          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5h18l-2.4 3.4a2 2 0 0 1-1.6.9H7a2 2 0 0 1-1.6-.9L3 9.5z"/><path d="M7 9.5V8a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v1.5"/><path d="M9.5 17h5"/></svg>
+        <button class="tile" data-app="HDMI 1" data-source="HDMI1">
+          <span class="ibox"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5h18l-2.4 3.4a2 2 0 0 1-1.6.9H7a2 2 0 0 1-1.6-.9L3 9.5z"/><path d="M7 9.5V8a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v1.5"/><path d="M9.5 17h5"/></svg></span>
           <span class="qlabel">HDMI 1</span>
         </button>
-        <button class="tile" data-app="HDMI 2">
-          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5h18l-2.4 3.4a2 2 0 0 1-1.6.9H7a2 2 0 0 1-1.6-.9L3 9.5z"/><path d="M7 9.5V8a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v1.5"/><path d="M9.5 17h5"/></svg>
+        <button class="tile" data-app="HDMI 2" data-source="HDMI2">
+          <span class="ibox"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5h18l-2.4 3.4a2 2 0 0 1-1.6.9H7a2 2 0 0 1-1.6-.9L3 9.5z"/><path d="M7 9.5V8a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v1.5"/><path d="M9.5 17h5"/></svg></span>
           <span class="qlabel">HDMI 2</span>
         </button>
         <button class="tile" data-app="USB">
-          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="9" width="10" height="12" rx="2"/><path d="M9 9V5.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V9"/><path d="M10.5 13.5h.01M13.5 13.5h.01"/></svg>
+          <span class="ibox"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="9" width="10" height="12" rx="2"/><path d="M9 9V5.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V9"/><path d="M10.5 13.5h.01M13.5 13.5h.01"/></svg></span>
           <span class="qlabel">USB</span>
-        </button>
-        <button class="tile" data-app="YouTube" data-url="https://www.youtube.com/tv">
-          <svg class="ic yt" viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.5a3 3 0 0 0-2.1-2.1C19 4.9 12 4.9 12 4.9s-7 0-8.9.5A3 3 0 0 0 1 7.5 31 31 0 0 0 .6 12 31 31 0 0 0 1 16.5a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5A3 3 0 0 0 23 16.5 31 31 0 0 0 23.4 12 31 31 0 0 0 23 7.5z"/><path d="M9.8 15.3V8.7l5.7 3.3z" fill="#06070b"/></svg>
-          <span class="qlabel">YouTube</span>
-        </button>
-        <button class="tile" data-app="Buscar">
-          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-          <span class="qlabel">Buscar</span>
-        </button>
-        <button class="tile" data-app="Ajustes">
-          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 0 1-4 0v-.1A1.6 1.6 0 0 0 7 19.4l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 4.6 15H4.5a2 2 0 0 1 0-4h.1A1.6 1.6 0 0 0 6.3 8.3l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 11 4.6V4.5a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 .9 1.5h.1a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.5.9z"/></svg>
-          <span class="qlabel">Ajustes</span>
-        </button>
-        <button class="tile dim" data-app="TV / Antena (coaxial)">
-          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20l7-9 7 9"/><path d="M12 11V4.5"/><path d="M8.6 6.6a5 5 0 0 1 6.8 0"/><path d="M6.4 4.4a8 8 0 0 1 11.2 0"/></svg>
-          <span class="qlabel">Antena</span>
         </button>
       </div>
     </section>
@@ -203,16 +288,33 @@
   // live clock + greeting + date
   var MESES=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
   var DIAS=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+  var NAME="Fredi";  // se sobrescribe con config.json cuando la página la sirve el puente
   function pad(n){return (n<10?"0":"")+n;}
+  function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
   function tick(){
     var d=new Date();
     var h=d.getHours();
     document.getElementById("clock").textContent=pad(h)+":"+pad(d.getMinutes());
     var g = h<6?"Buenas noches" : h<12?"Buenos días" : h<19?"Buenas tardes" : "Buenas noches";
-    document.getElementById("greet").innerHTML = g+', <span class="name">Fredi</span>';
-    document.getElementById("dateline").textContent = DIAS[d.getDay()]+" "+d.getDate()+" de "+MESES[d.getMonth()];
+    var greetEl=document.getElementById("greet");
+    greetEl.textContent=g;
+    if(NAME){
+      greetEl.appendChild(document.createTextNode(", "));
+      var nameEl=document.createElement("span"); nameEl.className="name"; nameEl.textContent=NAME;
+      greetEl.appendChild(nameEl);
+    }
+    document.getElementById("dateline").textContent = cap(DIAS[d.getDay()])+" "+d.getDate()+" de "+cap(MESES[d.getMonth()]);
   }
   tick(); setInterval(tick, 10000);
+
+  // El nombre del saludo se cambia en config.json, en la carpeta del puente.
+  if(location.protocol==="http:"){
+    var cfg=new XMLHttpRequest(); cfg.open("GET","/config.json");
+    cfg.onload=function(){
+      try{ var c=JSON.parse(cfg.responseText); if(typeof c.nombre==="string"){ NAME=c.nombre.trim(); tick(); } }catch(e){}
+    };
+    cfg.send();
+  }
 
   // toast on "launch"
   var toast=document.getElementById("toast"), tid;
@@ -223,14 +325,30 @@
     tid=setTimeout(function(){ toast.classList.remove("show");
       setTimeout(function(){ toast.hidden=true; }, 220); }, ms||1600);
   }
+  // Servida por el puente (http en la red local), la página abre las apps nativas
+  // de la TV con tu sesión. Desde https (GitHub Pages, vista previa) abre la web.
+  var BRIDGE = location.protocol === "http:";
+  function callBridge(path, name){
+    showToast("Abriendo "+name+" …", 3500);
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", path);
+    xhr.onload = function(){
+      var j = {};
+      try { j = JSON.parse(xhr.responseText); } catch(e) {}
+      if(!j.ok) showToast("No se pudo abrir "+name+(j.error ? ": "+j.error : ""), 3500);
+    };
+    xhr.onerror = function(){ showToast("El puente no responde. ¿Está encendida la PC?", 3500); };
+    xhr.send();
+  }
   function openTile(el){
-    var name=el.dataset.app, url=el.dataset.url;
-    if(url){
+    var name=el.dataset.app, key=el.dataset.key, src=el.dataset.source, url=el.dataset.url;
+    if(BRIDGE && key){ callBridge("/api/launch?app="+encodeURIComponent(key), name); }
+    else if(BRIDGE && src){ callBridge("/api/source?id="+encodeURIComponent(src), name); }
+    else if(url){
       showToast("Abriendo "+name+" …");
       setTimeout(function(){ window.location.href=url; }, 450);
     } else {
-      // Entradas (HDMI/USB) y ajustes son del sistema: no se pueden desde la web.
-      showToast(name+" · requiere el servicio de control", 2200);
+      showToast(name+" · aún no disponible", 2200);
     }
   }
 
@@ -273,6 +391,54 @@
     t.addEventListener("click",function(){ setFocus(t); openTile(t); });
   });
   setFocus(tiles[0]);
+})();
+</script>
+
+<script>
+// Ondas del fondo: cada línea es una suma de senos con un número entero de ciclos por
+// pantalla (W), así la curva se repite exacta y el deslizamiento no tiene saltos.
+(function(){
+  var NS="http://www.w3.org/2000/svg", W=1920, W2=W*2, N=320;
+  function curve(y0,harm,phase){
+    var d="", i, k, x, y;
+    for(i=0;i<=N;i++){
+      x=i*W2/N; y=y0;
+      for(k=0;k<harm.length;k++) y+=harm[k][0]*Math.sin(2*Math.PI*harm[k][1]*x/W+harm[k][2]+phase);
+      d+=(i?"L":"M")+x.toFixed(1)+" "+y.toFixed(1);
+    }
+    return d;
+  }
+  function bundle(id,count,y0,step,harm,dphase){
+    var g=document.getElementById(id), i, p;
+    if(!g) return;
+    for(i=0;i<count;i++){
+      p=document.createElementNS(NS,"path");
+      p.setAttribute("d",curve(y0+i*step,harm,i*dphase));
+      g.appendChild(p);
+    }
+  }
+  // [amplitud, ciclos por pantalla, fase]
+  bundle("wavesA",11,250,9,[[120,1,0],[46,2,1.3],[18,3,2.1]],0.16);
+  bundle("wavesB",14,200,7,[[100,1,2.2],[52,2,0.4]],0.22);
+})();
+</script>
+
+<script>
+// Freno automático: en una TV lenta la animación puede entrecortarse. Se mide el
+// ritmo de fotogramas poco después de cargar y, si es bajo, se deja el fondo quieto.
+(function(){
+  var deltas=[], last=0;
+  function sample(t){
+    if(last){ var d=t-last; if(d<1000) deltas.push(d); }  // ignora pausas (pestaña oculta)
+    last=t;
+    if(deltas.length>=90){
+      deltas.sort(function(a,b){ return a-b; });
+      if(deltas[45]>50) document.documentElement.className+=" nofx";  // mediana bajo ~20 fps
+      return;
+    }
+    requestAnimationFrame(sample);
+  }
+  setTimeout(function(){ requestAnimationFrame(sample); }, 1500);
 })();
 </script>
 

@@ -1,0 +1,10 @@
+# Secretos y credenciales: nunca van al repo. Se generan localmente con Sidee.
+session.json
+*.bundle
+certs.bin.k
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.pyc
